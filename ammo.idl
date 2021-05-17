@@ -40,14 +40,6 @@ interface btVector3 {
   [Operator="-=", Ref] btVector3 op_sub([Ref] btVector3 v);
 };
 
-interface btVector4 {
-  void btVector4();
-  void btVector4(float x, float y, float z, float w);
-  float w();
-  void setValue(float x, float y, float z, float w);
-};
-btVector4 implements btVector3;
-
 interface btQuadWord {
   float x();
   float y();

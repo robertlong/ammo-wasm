@@ -46,7 +46,9 @@ set(EMCC_ARGS
   -s EXTRA_EXPORTED_RUNTIME_METHODS=["addFunction"]
   -s EXPORT_NAME="Ammo"
   -s MODULARIZE=1
+  -s EXPORT_ES6=1
   -s NO_EXIT_RUNTIME=1
+  -s NODEJS_CATCH_REJECTION=0
   -s NO_FILESYSTEM=1
   -s TOTAL_MEMORY=${TOTAL_MEMORY})
 
@@ -60,13 +62,6 @@ else()
   LIST(APPEND EMCC_ARGS
     -s NO_DYNAMIC_EXECUTION=1)
 endif()
-
-set(EMCC_JS_ARGS ${EMCC_ARGS}
-  -s AGGRESSIVE_VARIABLE_ELIMINATION=1
-  -s ELIMINATE_DUPLICATE_FUNCTIONS=1
-  -s LEGACY_VM_SUPPORT=1
-  -s SINGLE_FILE=1
-  -s WASM=0)
 
 set(EMCC_WASM_ARGS ${EMCC_ARGS}
   -s BINARYEN_IGNORE_IMPLICIT_TRAPS=1
@@ -102,19 +97,9 @@ add_custom_target(ammo-bindings ALL DEPENDS glue.js glue.o)
 
 #######################################
 add_custom_command(
-  OUTPUT ammo.js
-  COMMAND emcc glue.o ${BULLET_LIBS} ${EMCC_JS_ARGS} -o ammo.js
-  DEPENDS ammo-bindings ${AMMO_FRONT_MATTER_FILE} ${AMMO_ONLOAD_FILE} ${BULLET_TARGETS}
-  COMMENT "Building ammo javascript"
-  VERBATIM)
-add_custom_target(ammo-javascript ALL DEPENDS ammo.js)
-
-
-#######################################
-add_custom_command(
-  OUTPUT ammo.wasm.js ammo.wasm.wasm
-  COMMAND emcc glue.o ${BULLET_LIBS} ${EMCC_WASM_ARGS} -o ammo.wasm.js
+  OUTPUT ammo-wasm.js ammo-wasm.wasm
+  COMMAND emcc glue.o ${BULLET_LIBS} ${EMCC_WASM_ARGS} -o ammo-wasm.js
   DEPENDS ammo-bindings ${AMMO_FRONT_MATTER_FILE} ${AMMO_ONLOAD_FILE} ${BULLET_TARGETS}
   COMMENT "Building ammo webassembly"
   VERBATIM)
-add_custom_target(ammo-wasm ALL DEPENDS ammo.wasm.js ammo.wasm.wasm)
+add_custom_target(ammo-wasm ALL DEPENDS ammo-wasm.js ammo-wasm.wasm)
